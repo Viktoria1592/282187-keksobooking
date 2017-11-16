@@ -1,7 +1,7 @@
 # Личный проект «Кексобукинг» [![Build status][travis-image]][travis-url]
 
 * Студент: [Тимур Касиев](https://up.htmlacademy.ru/javascript/11/user/282187).
-* Наставник: `Неизвестно`.
+* Наставница: [Софья Ильинова](https://htmlacademy.ru/profile/i).
 
 ---
 
