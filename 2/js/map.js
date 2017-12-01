@@ -41,15 +41,6 @@ var ALL_CHECKOUTS = ALL_CHECKINS.slice();
 
 
 /**
- * Превращает число в строку, добавляя ноль перед num-числом к однозначным num
- * @param {number} num
- * @return {string}
- */
-var addZero = function (num) {
-  return (num < 10 ? '0' : '') + num;
-};
-
-/**
  * Генерирует случайное число от min до max. Если без третьего параметра --- не включая max, с --- включая max
  * @param {number} min
  * @param {number} max
@@ -67,37 +58,12 @@ var getRandomNum = function (min, max, includeMax) {
 };
 
 /**
- * Возвращает массив случайных чисел от min до max включительно. Длина массива === arrLength
- * @param {number} min
- * @param {number} max
- * @param {number} arrLength
- * @return {Array}
- */
-var getArrayOfRandomNums = function (min, max, arrLength) {
-  var RandomNums = [];
-  for (var i = 0; i < arrLength; i += 1) {
-    RandomNums.push(getRandomNum(min, max, true));
-  }
-
-  return RandomNums;
-};
-
-var allCoordX = getArrayOfRandomNums(300, 900, OFFERS_COUNT);
-var allCoordY = getArrayOfRandomNums(100, 500, OFFERS_COUNT);
-
-/**
- * Возвращает массив длины arrLength, каждый элемент которого это случайный элемент исходного массива
+ * Возвращает случайный элемент массива
  * @param {Array} srcArray
- * @param {number} arrLength
- * @return {Array}
+ * @return {string}
  */
-var geArrayOfRandomElems = function (srcArray, arrLength) {
-  var randomElemsArray = [];
-  for (var i = 0; i < arrLength; i += 1) {
-    randomElemsArray.push(srcArray[getRandomNum(0, srcArray.length)]);
-  }
-
-  return randomElemsArray;
+var getRandomElem = function (srcArray) {
+  return srcArray[getRandomNum(0, srcArray.length)];
 };
 
 /**
@@ -116,84 +82,25 @@ var getArrayOfRandomLength = function (srcArray) {
 };
 
 /**
- * Получает массив, копирует его. Работает с копией, размешивает ее элементы
- * @param {Array} srcArr
- * @param {number} arrLength - необязательный параметр. Если задан - количество элементов в новом массиве === arrLength, элементы не повторяются. Если arrLength > фактической длины массива - получаем повторы.
- * @return {Array}
+ * Превращает число в строку, добавляя ноль перед num-числом к однозначным num
+ * @param {number} num
+ * @return {string}
  */
-var getNewRandomizedArr = function (srcArr, arrLength) {
-  if (!arrLength) {
-    arrLength = srcArr.length;
-  }
-
-  var arrayCopy = srcArr.slice();
-  var randomArr = [];
-  var randomIndex;
-
-  if (arrLength > srcArr.length) {
-    for (var i = 0; i < arrLength; i += 1) {
-      randomIndex = getRandomNum(0, arrayCopy.length);
-      randomArr.push(arrayCopy[randomIndex]);
-    }
-
-  } else {
-    for (var j = 0; j < arrLength; j += 1) {
-      randomIndex = getRandomNum(0, arrayCopy.length);
-      randomArr.push(arrayCopy[randomIndex]);
-      arrayCopy.splice(randomIndex, 1);
-    }
-  }
-
-  return randomArr;
+var addZero = function (num) {
+  return (num < 10 ? '0' : '') + num;
 };
 
 /**
- * Возвращает массив URI-адресов длиной count, каждый адрес заканчивается на i до count включительно, + .png. Массив размешан
- * @param {number} count
- * @return {Array}
+ * Возвращает адрес изображения
+ * @param {number} avatar
+ * @return {string}
  */
-var getImgURIs = function (count) {
-  var URIs = [];
-  for (var i = 1; i <= count; i += 1) {
-    URIs.push('img/avatars/user' + addZero(i) + '.png');
-  }
-
-  return getNewRandomizedArr(URIs);
+var getAvatarUrl = function (avatar) {
+  return 'img/avatars/user' + addZero(avatar) + '.png';
 };
 
 /**
- * Возвращает координатный адрес на карте формата "координата х, координата y".
- * @param {array} x
- * @param {array} y
- * @param {number} arrLength
- * @return {Array}
- */
-var getAddresses = function (x, y, arrLength) {
-  var addresses = [];
-  for (var i = 0; i < arrLength; i += 1) {
-    addresses.push(x[i] + ', ' + y[i]);
-  }
-
-  return addresses;
-};
-
-/**
- * Возвращает массив длины arrLength, в каждом из значений которого случайное количество фич
- * @param {Array} AllFeatures
- * @param {Number} arrLength
- * @return {Array}
- */
-var getFeatures = function (AllFeatures, arrLength) {
-  var arrayOfValues = [];
-  for (var i = 0; i < arrLength; i += 1) {
-    arrayOfValues.push(getArrayOfRandomLength(AllFeatures));
-  }
-
-  return arrayOfValues;
-};
-
-/**
- * Преобразует тип в русское название
+ * Преобразует тип в русское название. Если тип был передан в объекте - сначала преобразует его в строку
  * @param {string} type
  * @return {string}
  */
@@ -210,125 +117,140 @@ var translateType = function (type) {
   return type;
 };
 
-/** Создаем нужное количество массивов для объявлений */
-var offersData = {
-  avatars: getImgURIs(8),
-
-  types: geArrayOfRandomElems(ALL_TYPES, OFFERS_COUNT),
-  addresses: getAddresses(allCoordX, allCoordY, OFFERS_COUNT),
-  prices: getArrayOfRandomNums(1000, 1000000, OFFERS_COUNT),
-  rooms: getArrayOfRandomNums(1, 5, OFFERS_COUNT),
-  guests: getArrayOfRandomNums(1, 10, OFFERS_COUNT),
-  titles: getNewRandomizedArr(ALL_TITLES),
-  checkins: getNewRandomizedArr(ALL_CHECKINS, OFFERS_COUNT),
-  checkouts: getNewRandomizedArr(ALL_CHECKOUTS, OFFERS_COUNT),
-  features: getFeatures(ALL_FEATURES, OFFERS_COUNT),
-  descriptions: [' '],
-  photos: [],
-
-  x: allCoordX,
-  y: allCoordY
-};
-
 /**
  * Создает массив объявлений
- * @param {Object} offers - База данных объявлений
  * @param {number} count - Количество нужных объявлений
  * @return {Array}
  */
-var getArrayOfOffers = function (offers, count) {
+var getArrayOfOffers = function (count) {
   var offersArray = [];
   var currentOffer;
+
   for (var i = 0; i < count; i += 1) {
+    /** Получаем координаты для использования в массивах */
+    var x = getRandomNum(300, 900, true);
+    var y = getRandomNum(100, 500, true);
+
     currentOffer = {
       author: {
-        avatar: offersData.avatars[i]
+        avatar: getAvatarUrl(i + 1)
       },
       offer: {
-        title: offersData.titles[i],
-        address: offersData.addresses[i],
-        price: offersData.prices[i],
-        type: offersData.types[i],
-        rooms: offersData.rooms[i],
-        guests: offersData.guests[i],
-        checkin: offersData.checkins[i],
-        checkout: offersData.checkouts[i],
-        features: offersData.features[i],
+        title: getRandomElem(ALL_TITLES),
+        address: x + ', ' + y,
+        price: getRandomNum(1000, 1000000, true),
+        type: getRandomElem(ALL_TYPES),
+        rooms: getRandomNum(1, 5, true),
+        guests: getRandomNum(1, 10, true),
+        checkin: getRandomElem(ALL_CHECKINS),
+        checkout: getRandomElem(ALL_CHECKOUTS),
+        features: getArrayOfRandomLength(ALL_FEATURES),
         description: '',
         photos: []
       },
       location: {
-        x: offersData.x[i],
-        y: offersData.y[i]
+        x: x,
+        y: y
       }
     };
-
     offersArray.push(currentOffer);
   }
 
   return offersArray;
 };
-var arrayOfOffers = getArrayOfOffers(offersData, 8);
 
+var arrayOfOffers = getArrayOfOffers(OFFERS_COUNT);
+var CURRENT_OFFER = arrayOfOffers[0];
 
 /**
- * Отрисовывает пины
- * @param {Array} offers - принимает массив с объявлениями
- * @param {Node} context - то, куда отрисовываются элементы
+ * Готовит фрагмент пина
+ * @param {Object} coordinates
+ * @param {string} avatar
+ * @return {HTMLButtonElement}
  */
-var renderPins = function (offers, context) {
-  offers.forEach(function (offer, index) {
-    var currentOffer = offers[index];
-    var currentPin = document.createElement('button');
-    var pinImage = document.createElement('img');
+var createPinElem = function (coordinates, avatar) {
+  var currentPin = document.createElement('button');
+  var pinImage = document.createElement('img');
 
-    currentPin.setAttribute('style', 'left:' + currentOffer.location.x + 'px; top:' + currentOffer.location.y + 'px');
-    currentPin.classList.add('map__pin');
+  pinImage.setAttribute('width', '40');
+  pinImage.setAttribute('height', '40');
+  pinImage.setAttribute('draggable', 'false');
+  pinImage.src = avatar;
 
-    pinImage.setAttribute('width', '40');
-    pinImage.setAttribute('height', '40');
-    pinImage.setAttribute('draggable', 'false');
-    pinImage.src = currentOffer.author.avatar;
+  var PIN_HEIGHT = 18;
+  var OFFSET_X = pinImage.getAttribute('width') / 2;
+  var OFFSET_Y = +pinImage.getAttribute('height') + PIN_HEIGHT;
+  console.log(OFFSET_Y);
 
-    currentPin.appendChild(pinImage);
-    context.appendChild(currentPin);
-  });
+  currentPin.style.left = coordinates.x - OFFSET_X + 'px';
+  currentPin.style.top = coordinates.y - OFFSET_Y + 'px';
+  currentPin.classList.add('map__pin');
+
+  currentPin.appendChild(pinImage);
+
+  return currentPin;
 };
 
 /**
- * Отрисовывает нужное количество фич (HTML-элементы <li> с нужным классом)
- * @param {Object} features
- * @param {Node} context - то, куда отрисовываются элементы
+ * Рендерит фрагмент пина
+ * @param {Array} offers
+ * @return {DocumentFragment}
  */
-var renderFeatures = function (features, context) {
-  context.innerHTML = '';
-  features.forEach(function (feature) {
-    var currentLi = document.createElement('li');
-    currentLi.classList.add('feature', 'feature--' + feature);
-    context.appendChild(currentLi);
+var renderPins = function (offers) {
+  var pinFragment = document.createDocumentFragment();
+
+  offers.forEach(function (offer) {
+    pinFragment.appendChild(createPinElem(offer.location, offer.author.avatar));
   });
+
+  return pinFragment;
+};
+
+/**
+ * Готовит фрагмент фичи
+ * @param {Object} feature
+ * @return {HTMLLIElement}
+ */
+var createFeaturesElem = function (feature) {
+  var currentLi = document.createElement('li');
+  currentLi.classList.add('feature', 'feature--' + feature);
+
+  return currentLi;
+};
+
+/**
+ * Рендерит фрагмент фичи
+ * @param {Array} featuresArray
+ * @return {DocumentFragment}
+ */
+var renderFeaturesElem = function (featuresArray) {
+  var featuresFragment = document.createDocumentFragment();
+
+  featuresArray.forEach(function (feature) {
+    featuresFragment.appendChild(createFeaturesElem(feature));
+  });
+
+  return featuresFragment;
 };
 
 /**
  * Отрисовывает объявление
- * @param {Array} offersArray
- * @param {number} index - Тот элемент массива, который мы хотим показывать объявлением
+ * @param {Object} currentOffer
  * @return {Element}
  */
-var renderOffer = function (offersArray, index) {
-  var currentOffer = offersArray[index];
-
+var renderOffer = function (currentOffer) {
   var offerTemplate = document.querySelector('template').content.querySelector('article.map__card');
 
-  offerTemplate.querySelector('h3').textContent = currentOffer.author.title;
+  offerTemplate.querySelector('h3').textContent = currentOffer.offer.title;
   offerTemplate.querySelector('p small').textContent = currentOffer.offer.address;
   offerTemplate.querySelector('.popup__price').textContent = currentOffer.offer.price + '₽/ночь';
   offerTemplate.querySelector('h4').textContent = translateType(currentOffer.offer.type);
   offerTemplate.querySelector('h4 + p').textContent = currentOffer.offer.rooms + ' комнаты для ' + currentOffer.offer.guests + ' гостей';
   offerTemplate.querySelector('h4 + p + p').textContent = 'Заезд после ' + currentOffer.offer.checkin + ',' + ' выезд до ' + currentOffer.offer.checkout;
-  renderFeatures(currentOffer.offer.features, offerTemplate.querySelector('.popup__features'));
   offerTemplate.querySelector('.popup__avatar').src = currentOffer.author.avatar;
   offerTemplate.querySelector('ul + p').textContent = '';
+  offerTemplate.querySelector('.popup__features').innerHTML = '';
+
   return offerTemplate;
 };
 
@@ -339,15 +261,14 @@ var renderMap = function () {
   document.querySelector('.map').classList.remove('map--faded');
 
   var fragment = document.createDocumentFragment();
-  var pins = document.createDocumentFragment();
 
   var mapFilters = document.querySelector('.map__filters-container');
-  var mapPins = document.querySelector('.map__pins');
+  var offerTemplate = renderOffer(CURRENT_OFFER);
 
-  renderPins(arrayOfOffers, pins);
-  fragment.appendChild(renderOffer(arrayOfOffers, 0));
+  offerTemplate.querySelector('.popup__features').appendChild(renderFeaturesElem(CURRENT_OFFER.offer.features));
+  fragment.appendChild(offerTemplate);
+  fragment.appendChild(renderPins(arrayOfOffers));
   mapFilters.appendChild(fragment);
-  mapPins.appendChild(pins);
 };
 
 renderMap();
