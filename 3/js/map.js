@@ -206,21 +206,22 @@ var renderFeaturesElem = function (featuresArray) {
 
 /**
  * Отрисовывает объявление
- * @param {Object} currentOffer
+ * @param {Object} rent
  * @return {HTMLElement}
  */
-var renderOffer = function (currentOffer) {
+var renderOffer = function (rent) {
   var offerElem = document.querySelector('template').content.querySelector('article.map__card').cloneNode(true);
 
-  offerElem.querySelector('h3').textContent = currentOffer.offer.title;
-  offerElem.querySelector('p small').textContent = currentOffer.offer.address;
-  offerElem.querySelector('.popup__price').textContent = currentOffer.offer.price + '₽/ночь';
-  offerElem.querySelector('h4').textContent = ALL_TYPES[currentOffer.offer.type];
-  offerElem.querySelector('h4 + p').textContent = currentOffer.offer.rooms + ' комнаты для ' + currentOffer.offer.guests + ' гостей';
-  offerElem.querySelector('h4 + p + p').textContent = 'Заезд после ' + currentOffer.offer.checkin + ',' + ' выезд до ' + currentOffer.offer.checkout;
-  offerElem.querySelector('.popup__avatar').src = currentOffer.author.avatar;
+  offerElem.querySelector('h3').textContent = rent.offer.title;
+  offerElem.querySelector('p small').textContent = rent.offer.address;
+  offerElem.querySelector('.popup__price').textContent = rent.offer.price + '₽/ночь';
+  offerElem.querySelector('h4').textContent = ALL_TYPES[rent.offer.type];
+  offerElem.querySelector('h4 + p').textContent = rent.offer.rooms + ' комнаты для ' + rent.offer.guests + ' гостей';
+  offerElem.querySelector('h4 + p + p').textContent = 'Заезд после ' + rent.offer.checkin + ',' + ' выезд до ' + rent.offer.checkout;
+  offerElem.querySelector('.popup__avatar').src = rent.author.avatar;
   offerElem.querySelector('ul + p').textContent = '';
   offerElem.querySelector('.popup__features').innerHTML = '';
+  offerElem.removeChild(offerElem.querySelector('.popup__pictures'));
 
   return offerElem;
 };
@@ -258,42 +259,29 @@ var formElem = document.querySelector('.notice__form');
 var formFieldElem = formElem.querySelectorAll('fieldset');
 
 /**
- * Добавляет аттрибут disabled нодам формы. Учитывает количество нод
- * @param {HTMLElement} elem
+ * Добавляет или убирает аттрибут disabled нодам формы в зависимости от условия. Учитывает количество нод
+ * @param {HTMLCollection|HTMLElement} elem
+ * @param {boolean} isDisabled
  */
-var disableFormElems = function (elem) {
+var toggleDisabledOnFormElems = function (elem, isDisabled) {
   if (elem.length > 1) {
     elem.forEach(function (toBeDisabled) {
-      toBeDisabled.setAttribute('disabled', '');
+      toBeDisabled.disabled = isDisabled;
     });
   } else {
-    elem.setAttribute('disabled', '');
+    elem.disabled = isDisabled;
   }
 };
 
-/**
- * Отнимает аттрибут disabled у нод формы. Учитывает количество нод
- * @param {HTMLElement} elem
- */
-var enableFormElems = function (elem) {
-  if (elem.length > 1) {
-    elem.forEach(function (toBeEnabled) {
-      toBeEnabled.removeAttribute('disabled');
-    });
-  } else {
-    elem.removeAttribute('disabled');
-  }
-};
-
-disableFormElems(mapFilters);
-disableFormElems(formFieldElem);
-disableFormElems(mapHousingFeatures);
+toggleDisabledOnFormElems(mapFilters, true);
+toggleDisabledOnFormElems(formFieldElem, true);
+toggleDisabledOnFormElems(mapHousingFeatures, true);
 
 /**
  * Проходится по всем пинам на карте, отнимает класс активности
  */
 var removePinActiveClass = function () {
-  var pins = mapPinsElem.querySelectorAll('.map__pin');
+  var pins = mapPinsElem.querySelectorAll('.map__pin--active');
   pins.forEach(function (pin) {
     pin.classList.remove('map__pin--active');
   });
@@ -334,9 +322,9 @@ var enableInteractivity = function () {
   mapElem.classList.remove('map--faded');
   formElem.classList.remove('notice__form--disabled');
 
-  enableFormElems(mapFilters);
-  enableFormElems(formFieldElem);
-  enableFormElems(mapHousingFeatures);
+  toggleDisabledOnFormElems(mapFilters, false);
+  toggleDisabledOnFormElems(formFieldElem, false);
+  toggleDisabledOnFormElems(mapHousingFeatures, false);
 
   renderMap();
   getReadyToClosePopup();
@@ -377,6 +365,7 @@ var replacePopup = function (eventTarget) {
   var newOfferIndex = parseFloat(eventTarget.dataset.offer);
   var newOfferObj = offersArray[newOfferIndex];
   var newOfferElem = renderOffer(newOfferObj);
+  newOfferElem.appendChild(renderFeaturesElem(newOfferObj.offer.features));
 
   mapFiltersElem.replaceChild(newOfferElem, oldOfferElem);
 };
