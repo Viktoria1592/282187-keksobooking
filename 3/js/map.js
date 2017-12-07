@@ -365,7 +365,9 @@ var replacePopup = function (eventTarget) {
   var newOfferIndex = parseFloat(eventTarget.dataset.offer);
   var newOfferObj = offersArray[newOfferIndex];
   var newOfferElem = renderOffer(newOfferObj);
-  newOfferElem.appendChild(renderFeaturesElem(newOfferObj.offer.features));
+
+  var newOfferFeaturesElem = newOfferElem.querySelector('.popup__features');
+  newOfferFeaturesElem.appendChild(renderFeaturesElem(newOfferObj.offer.features));
 
   mapFiltersElem.replaceChild(newOfferElem, oldOfferElem);
 };
