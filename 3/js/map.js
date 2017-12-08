@@ -1,5 +1,30 @@
 'use strict';
 
+/**
+ * Объект объявления
+ * @typedef {Object} OfferObj
+ * @property {Object} OfferObj.author
+ * @property {Object} OfferObj.offer
+ * @property {Object} OfferObj.location
+ *
+ * @property {string} OfferObj.author.avatar
+ *
+ * @property {string} OfferObj.offer.title
+ * @property {string} OfferObj.offer.address
+ * @property {number} OfferObj.offer.price
+ * @property {string} OfferObj.offer.type
+ * @property {number} OfferObj.offer.rooms
+ * @property {number} OfferObj.offer.guests
+ * @property {string} OfferObj.offer.checkin
+ * @property {string} OfferObj.offer.checkout
+ * @property {Array} OfferObj.offer.features
+ * @property {string} OfferObj.offer.description
+ * @property {Array} OfferObj.offer.photos
+ *
+ * @property {number} OfferObj.location.x
+ * @property {number} OfferObj.location.y
+ */
+
 /** Количество нужных объявлений */
 var OFFERS_COUNT = 8;
 
@@ -38,6 +63,7 @@ var ALL_CHECKINS = [
 ];
 
 var ALL_CHECKOUTS = ALL_CHECKINS.slice();
+
 
 /**
  * Генерирует случайное число от min до max. Если без третьего параметра --- не включая max, с --- включая max
@@ -89,6 +115,7 @@ var getAvatarUrl = function (avatar) {
   return 'img/avatars/user' + addZero(avatar) + '.png';
 };
 
+
 /**
  * Создает массив объявлений
  * @param {number} count - Количество нужных объявлений
@@ -131,8 +158,9 @@ var getArrayOfOffers = function (count) {
   return offersArray;
 };
 
+
+/** @type {Array.<OfferObj>} */
 var offersArray = getArrayOfOffers(OFFERS_COUNT);
-var currentOffer = offersArray[0];
 
 
 var pinTemplate = document.querySelector('template').content.querySelector('.map__pin');
@@ -144,9 +172,9 @@ var PIN_OFFSET_X = pinImgElem.getAttribute('width') / 2;
 var PIN_OFFSET_Y = parseFloat(pinImgElem.getAttribute('height')) + PIN_HEIGHT;
 
 /**
- * Готовит фрагмент пина
- * @param {Object} coordinates
- * @param {string} avatar
+ * Создает ноду пина
+ * @param {OfferObj.location} coordinates
+ * @param {OfferObj.author.avatar} avatar
  * @param {number} dataIndex
  * @return {HTMLElement}
  */
@@ -163,22 +191,23 @@ var createPinElem = function (coordinates, avatar, dataIndex) {
 };
 
 /**
- * Рендерит фрагмент пина
- * @param {Array} offers
- * @return {DocumentFragment}
+ * Рендерит фрагмент всех пинов
+ * @param {Array.<OfferObj>} offers
  */
 var renderPins = function (offers) {
   var pinFragment = document.createDocumentFragment();
+  var mapPinsElem = document.querySelector('.map__pins');
 
   offers.forEach(function (offer, index) {
     pinFragment.appendChild(createPinElem(offer.location, offer.author.avatar, index));
   });
 
-  return pinFragment;
+  mapPinsElem.appendChild(pinFragment);
 };
 
+
 /**
- * Готовит фрагмент фичи
+ * Создает ноду фичи
  * @param {string} feature
  * @return {HTMLElement}
  */
@@ -190,11 +219,11 @@ var createFeaturesElem = function (feature) {
 };
 
 /**
- * Рендерит фрагмент фичи
- * @param {Array} featuresArray
+ * Создает фрагмент фичи
+ * @param {OfferObj.offer.features} featuresArray
  * @return {DocumentFragment}
  */
-var renderFeaturesElem = function (featuresArray) {
+var createFeaturesFragment = function (featuresArray) {
   var featuresFragment = document.createDocumentFragment();
 
   featuresArray.forEach(function (feature) {
@@ -204,12 +233,13 @@ var renderFeaturesElem = function (featuresArray) {
   return featuresFragment;
 };
 
+
 /**
- * Отрисовывает объявление
- * @param {Object} rent
+ * Создает ноду объявления
+ * @param {OfferObj} rent
  * @return {HTMLElement}
  */
-var renderOffer = function (rent) {
+var createOfferElem = function (rent) {
   var offerElem = document.querySelector('template').content.querySelector('article.map__card').cloneNode(true);
 
   offerElem.querySelector('h3').textContent = rent.offer.title;
@@ -221,26 +251,12 @@ var renderOffer = function (rent) {
   offerElem.querySelector('.popup__avatar').src = rent.author.avatar;
   offerElem.querySelector('ul + p').textContent = '';
   offerElem.querySelector('.popup__features').innerHTML = '';
+  offerElem.querySelector('.popup__features').appendChild(createFeaturesFragment(rent.offer.features));
   offerElem.removeChild(offerElem.querySelector('.popup__pictures'));
 
   return offerElem;
 };
 
-/**
- * Отрисовывает всю карту вместе с пинами и попапом-объявлением
- */
-var renderMap = function () {
-  var mapPinsElem = document.querySelector('.map__pins');
-  var fragment = document.createDocumentFragment();
-
-  var mapFiltersElem = document.querySelector('.map__filters-container');
-  var offerElem = renderOffer(currentOffer);
-
-  offerElem.querySelector('.popup__features').appendChild(renderFeaturesElem(currentOffer.offer.features));
-  mapPinsElem.appendChild(renderPins(offersArray));
-  fragment.appendChild(offerElem);
-  mapFiltersElem.appendChild(fragment);
-};
 
 /** Константы клавиатурных кодов */
 var ESC_KEYCODE = 27;
@@ -249,37 +265,30 @@ var SPACE_KEYCODE = 32;
 
 
 var mapElem = document.querySelector('.map');
-var mapFilters = mapElem.querySelectorAll('.map__filter');
-var mapHousingFeatures = mapElem.querySelector('.map__filter-set');
 
 var mapPinsElem = mapElem.querySelector('.map__pins');
 var mapPinMainElem = mapElem.querySelector('.map__pin--main');
 
-var formElem = document.querySelector('.notice__form');
-var formFieldElem = formElem.querySelectorAll('fieldset');
+var mapFiltersFormElem = mapElem.querySelector('.map__filters');
+var noticeFormElem = document.querySelector('.notice__form');
 
 /**
- * Добавляет или убирает аттрибут disabled нодам формы в зависимости от условия. Учитывает количество нод
- * @param {HTMLCollection|HTMLElement} elem
+ * Добавляет или убирает аттрибут disabled нодам формы в зависимости от условия
+ * @param {HTMLCollection} form
  * @param {boolean} isDisabled
  */
-var toggleDisabledOnFormElems = function (elem, isDisabled) {
-  if (elem.length > 1) {
-    elem.forEach(function (toBeDisabled) {
-      toBeDisabled.disabled = isDisabled;
-    });
-  } else {
-    elem.disabled = isDisabled;
+var toggleDisabledOnFormElems = function (form, isDisabled) {
+  var formElems = form.elements;
+
+  for (var i = 0; i < formElems.length; i += 1) {
+    formElems[i].disabled = isDisabled;
   }
 };
 
-toggleDisabledOnFormElems(mapFilters, true);
-toggleDisabledOnFormElems(formFieldElem, true);
-toggleDisabledOnFormElems(mapHousingFeatures, true);
+toggleDisabledOnFormElems(noticeFormElem, true);
+toggleDisabledOnFormElems(mapFiltersFormElem, true);
 
-/**
- * Проходится по всем пинам на карте, отнимает класс активности
- */
+
 var removePinActiveClass = function () {
   var pins = mapPinsElem.querySelectorAll('.map__pin--active');
   pins.forEach(function (pin) {
@@ -287,9 +296,8 @@ var removePinActiveClass = function () {
   });
 };
 
-/**
- * Сначала отнимает у пинов активность, потом закрывает попап
- */
+
+/** Отнимает у активного пина активность, закрывает попап  */
 var closePopup = function () {
   removePinActiveClass();
 
@@ -303,9 +311,7 @@ var onPopupEscPress = function (event) {
   }
 };
 
-/**
- * Вешает закрывателей на ноду попапа
- */
+/** Вешает закрывателей на ноду попапа */
 var getReadyToClosePopup = function () {
   var popupCloseElem = document.querySelector('.map__card').querySelector('.popup__close');
 
@@ -315,19 +321,15 @@ var getReadyToClosePopup = function () {
   document.addEventListener('keydown', onPopupEscPress);
 };
 
-/**
- * Запускает весь функционал карты, а также энаблит элементы форм
- */
+/** Отрисовывает пины, энаблит элементы форм */
 var enableInteractivity = function () {
   mapElem.classList.remove('map--faded');
-  formElem.classList.remove('notice__form--disabled');
+  noticeFormElem.classList.remove('notice__form--disabled');
 
-  toggleDisabledOnFormElems(mapFilters, false);
-  toggleDisabledOnFormElems(formFieldElem, false);
-  toggleDisabledOnFormElems(mapHousingFeatures, false);
+  toggleDisabledOnFormElems(noticeFormElem, false);
+  toggleDisabledOnFormElems(mapFiltersFormElem, false);
 
-  renderMap();
-  getReadyToClosePopup();
+  renderPins(offersArray);
 };
 
 /**
@@ -346,30 +348,40 @@ var onUserPinMouseUp = function () {
 var onUserPinEnterPress = function (event) {
   if (event.keyCode === ENTER_KEYCODE || event.keyCode === SPACE_KEYCODE) {
     enableInteractivity();
+    mapPinMainElem.removeEventListener('keydown', onUserPinEnterPress);
+    mapPinMainElem.removeEventListener('mouseup', onUserPinMouseUp);
   }
-  mapPinMainElem.removeEventListener('keydown', onUserPinEnterPress);
-  mapPinMainElem.removeEventListener('mouseup', onUserPinMouseUp);
 };
 
 mapPinMainElem.addEventListener('mouseup', onUserPinMouseUp);
 mapPinMainElem.addEventListener('keydown', onUserPinEnterPress);
 
+
 /**
- * Матчит дата-аттрибут пина с индексом соответствующего пину объявления. Рендерит заново объявление с заменой предыдущего
+ * Матчит дата-аттрибут пина с индексом соответствующего пину объявления
  * @param {HTMLElement} eventTarget
+ * @return {Object}
  */
-var replacePopup = function (eventTarget) {
+var getClickedPinOffer = function (eventTarget) {
+  var offerIndex = parseFloat(eventTarget.dataset.offer);
+  return offersArray[offerIndex];
+};
+
+/**
+ * Рендерит объявление с заменой предыдущего (если оно было)
+ * @param {OfferObj} offer
+ */
+var renderPopup = function (offer) {
   var mapFiltersElem = document.querySelector('.map__filters-container');
+
   var oldOfferElem = mapFiltersElem.querySelector('.map__card');
+  var offerElem = createOfferElem(offer);
 
-  var newOfferIndex = parseFloat(eventTarget.dataset.offer);
-  var newOfferObj = offersArray[newOfferIndex];
-  var newOfferElem = renderOffer(newOfferObj);
-
-  var newOfferFeaturesElem = newOfferElem.querySelector('.popup__features');
-  newOfferFeaturesElem.appendChild(renderFeaturesElem(newOfferObj.offer.features));
-
-  mapFiltersElem.replaceChild(newOfferElem, oldOfferElem);
+  if (oldOfferElem) {
+    mapFiltersElem.replaceChild(offerElem, oldOfferElem);
+  } else {
+    mapFiltersElem.appendChild(offerElem);
+  }
 };
 
 /**
@@ -383,7 +395,7 @@ var onOfferPinClick = function (event) {
   while (target.className !== mapPinsElem.className) {
     if (target.className === 'map__pin') {
       target.classList.add('map__pin--active');
-      replacePopup(target);
+      renderPopup(getClickedPinOffer(target));
       getReadyToClosePopup();
       return;
     }
