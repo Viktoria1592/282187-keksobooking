@@ -233,7 +233,7 @@ textarea:focus
     position: absolute;
     z-index: 1;
 
-    width: 40px;
+    width: 46px;
     height: 44px;
     margin: 0;
     padding: 0;
@@ -257,6 +257,8 @@ textarea:focus
     position: absolute;
     top: 100%;
     left: 50%;
+
+  transform: translateX(-50%);
 
     width: 0;
     height: 0;
