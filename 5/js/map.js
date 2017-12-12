@@ -20,7 +20,7 @@ var enableInteractivity = function () {
   window.forms.toggleDisabledOnFormElems(noticeFormElem, false);
   window.forms.toggleDisabledOnFormElems(mapFiltersFormElem, false);
 
-  window.pins.renderPins(window.offersData.offersArray);
+  window.pins.renderPins(window.data.getOffers);
 };
 
 /**

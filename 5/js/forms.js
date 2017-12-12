@@ -1,6 +1,18 @@
 'use strict';
 
 (function () {
+  /** Константа количества гостей, при котором бронь будет считаться "не для гостей"  */
+  var NOT_FOR_GUESTS_VALUE = 100;
+
+  /** Константа минимальных цен */
+  var MIN_PRICES = {
+    bungalo: '0',
+    flat: '1000',
+    house: '5000',
+    palace: '10000'
+  };
+
+
   var userFormElem = document.querySelector('.notice__form');
 
   var checkinSelectElem = userFormElem.querySelector('#timein');
@@ -35,11 +47,11 @@
    */
   var syncTypeWithMinPrice = function () {
     var selectedType = typeSelectElem.options[typeSelectElem.selectedIndex].value;
-    priceInputElem.min = window.constants.MIN_PRICES[selectedType];
+    priceInputElem.min = MIN_PRICES[selectedType];
   };
 
   var syncRoomsWithGuests = function () {
-    if (numOfRoomsSelectElem.options[numOfRoomsSelectElem.selectedIndex].value === window.constants.NOT_FOR_GUESTS_VALUE) {
+    if (numOfRoomsSelectElem.options[numOfRoomsSelectElem.selectedIndex].value === NOT_FOR_GUESTS_VALUE) {
       var notForGuestsOption = capacitySelectElem.querySelector('option[value="0"]');
       notForGuestsOption.selected = true;
     } else {

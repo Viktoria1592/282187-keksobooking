@@ -2,8 +2,13 @@
 
 (function () {
   var pinTemplate = document.querySelector('template').content.querySelector('.map__pin');
+  var pinImgElem = pinTemplate.querySelector('img');
   var mapPinsElem = document.querySelector('.map .map__pins');
 
+  /** Константы размеров пина */
+  var PIN_NEEDLE_HEIGHT = 18;
+  var PIN_OFFSET_X = pinImgElem.getAttribute('width') / 2;
+  var PIN_OFFSET_Y = parseFloat(pinImgElem.getAttribute('height')) + PIN_NEEDLE_HEIGHT;
 
   /**
    * Создает ноду пина
@@ -16,8 +21,8 @@
     var pinElem = pinTemplate.cloneNode(true);
     pinElem.querySelector('img').src = avatar;
 
-    pinElem.style.left = coordinates.x - window.constants.PIN_OFFSET_X + 'px';
-    pinElem.style.top = coordinates.y - window.constants.PIN_OFFSET_Y + 'px';
+    pinElem.style.left = coordinates.x - PIN_OFFSET_X + 'px';
+    pinElem.style.top = coordinates.y - PIN_OFFSET_Y + 'px';
     pinElem.classList.add('map__pin');
     pinElem.dataset.offer = dataIndex;
 
@@ -52,7 +57,7 @@
    */
   var getClickedPinOffer = function (eventTarget) {
     var offerIndex = parseFloat(eventTarget.dataset.offer);
-    return window.offersData.offersArray[offerIndex];
+    return window.data.getOffers[offerIndex];
   };
 
   /**

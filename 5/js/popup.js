@@ -31,7 +31,7 @@
     var mapFiltersElem = document.querySelector('.map__filters-container');
 
     var oldOfferElem = mapFiltersElem.querySelector('.map__card');
-    var offerElem = window.offer.createOfferElem(offer);
+    var offerElem = window.offer.render(offer);
 
     if (oldOfferElem) {
       mapFiltersElem.replaceChild(offerElem, oldOfferElem);
