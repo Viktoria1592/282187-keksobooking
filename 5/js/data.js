@@ -2,32 +2,32 @@
 
 /**
  * Объект объявления
- * @typedef {Object} OfferObj
- * @property {Object} OfferObj.author
- * @property {Object} OfferObj.offer
- * @property {Object} OfferObj.location
+ * @typedef {Object} data
+ * @property {Object} data.author
+ * @property {Object} data.offer
+ * @property {Object} data.location
  *
- * @property {string} OfferObj.author.avatar
+ * @property {string} data.author.avatar
  *
- * @property {string} OfferObj.offer.title
- * @property {string} OfferObj.offer.address
- * @property {number} OfferObj.offer.price
- * @property {string} OfferObj.offer.type
- * @property {number} OfferObj.offer.rooms
- * @property {number} OfferObj.offer.guests
- * @property {string} OfferObj.offer.checkin
- * @property {string} OfferObj.offer.checkout
- * @property {Array} OfferObj.offer.features
- * @property {string} OfferObj.offer.description
- * @property {Array} OfferObj.offer.photos
+ * @property {string} data.offer.title
+ * @property {string} data.offer.address
+ * @property {number} data.offer.price
+ * @property {string} data.offer.type
+ * @property {number} data.offer.rooms
+ * @property {number} data.offer.guests
+ * @property {string} data.offer.checkin
+ * @property {string} data.offer.checkout
+ * @property {Array} data.offer.features
+ * @property {string} data.offer.description
+ * @property {Array} data.offer.photos
  *
- * @property {number} OfferObj.location.x
- * @property {number} OfferObj.location.y
+ * @property {number} data.location.x
+ * @property {number} data.location.y
  */
 
 (function () {
   /** Массивы-константы, полученные из ТЗ */
-  var ALL_TITLES = [
+  var TITLES = [
     'Большая уютная квартира',
     'Маленькая неуютная квартира',
     'Огромный прекрасный дворец',
@@ -38,7 +38,7 @@
     'Неуютное бунгало по колено в воде'
   ];
 
-  var ALL_FEATURES = [
+  var FEATURES = [
     'wifi',
     'dishwasher',
     'parking',
@@ -47,19 +47,19 @@
     'conditioner'
   ];
 
-  var ALL_TYPES = {
+  var TYPES = {
     flat: 'Квартира',
     bungalo: 'Бунгало',
     house: 'Дом'
   };
 
-  var ALL_CHECKINS = [
+  var CHECKINS = [
     '12:00',
     '13:00',
     '14:00'
   ];
 
-  var ALL_CHECKOUTS = [
+  var CHECKOUTS = [
     '12:00',
     '13:00',
     '14:00'
@@ -67,11 +67,20 @@
 
 
   /**
+   * Возвращает адрес изображения
+   * @param {number} img
+   * @return {string}
+   */
+  var getAvatarUrl = function (img) {
+    return 'img/avatars/user' + window.utils.addZero(img) + '.png';
+  };
+
+  /**
    * Создает массив объявлений
    * @param {number} count - Количество нужных объявлений
    * @return {Array}
    */
-  var getArrayOfOffers = function (count) {
+  var getOffers = function (count) {
     var offersArray = [];
     var currentOffer;
 
@@ -82,18 +91,18 @@
 
       currentOffer = {
         author: {
-          avatar: window.utils.getAvatarUrl(i + 1)
+          avatar: getAvatarUrl(i + 1)
         },
         offer: {
-          title: ALL_TITLES[i],
+          title: TITLES[i],
           address: x + ', ' + y,
           price: window.utils.getRandomNum(1000, 1000000, true),
-          type: window.utils.getRandomElem(Object.keys(ALL_TYPES)),
+          type: window.utils.getRandomElem(Object.keys(TYPES)),
           rooms: window.utils.getRandomNum(1, 5, true),
           guests: window.utils.getRandomNum(1, 10, true),
-          checkin: window.utils.getRandomElem(ALL_CHECKINS),
-          checkout: window.utils.getRandomElem(ALL_CHECKOUTS),
-          features: window.utils.getArrayOfRandomLength(ALL_FEATURES),
+          checkin: window.utils.getRandomElem(CHECKINS),
+          checkout: window.utils.getRandomElem(CHECKOUTS),
+          features: window.utils.getArrayOfRandomLength(FEATURES),
           description: '',
           photos: []
         },
@@ -110,8 +119,8 @@
 
 
   window.data = {
-    /** @type {Array.<OfferObj>} */
-    types: ALL_TYPES,
-    getOffers: getArrayOfOffers(window.constants.OFFERS_COUNT)
+    /** @type {Array.<data.offer.type>} */
+    types: TYPES,
+    getOffers: getOffers(window.constants.OFFERS_COUNT)
   };
 })();

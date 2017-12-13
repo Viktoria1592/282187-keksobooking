@@ -7,15 +7,15 @@
    * @return {HTMLElement}
    */
   var createFeaturesElem = function (feature) {
-    var featureElem = document.createElement('li');
-    featureElem.classList.add('feature', 'feature--' + feature);
+    var featuresElem = document.createElement('li');
+    featuresElem.classList.add('feature', 'feature--' + feature);
 
-    return featureElem;
+    return featuresElem;
   };
 
   /**
    * Создает фрагмент фич
-   * @param {OfferObj.offer.features} featuresArray
+   * @param {data.offer.features} featuresArray
    * @return {DocumentFragment}
    */
   var createFeaturesFragment = function (featuresArray) {
@@ -30,7 +30,7 @@
 
   /**
    * Создает ноду объявления
-   * @param {OfferObj} rent
+   * @param {data} rent
    * @return {HTMLElement}
    */
   var createOfferElem = function (rent) {
@@ -53,6 +53,6 @@
 
 
   window.offer = {
-    render: createOfferElem
+    createElem: createOfferElem
   };
 })();

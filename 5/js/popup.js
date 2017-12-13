@@ -2,47 +2,48 @@
 
 (function () {
   /** Отнимает у активного пина активность, закрывает попап  */
-  var closePopup = function () {
+  var close = function () {
     var popupElem = document.querySelector('.map__card');
-    window.pins.removePinActiveClass();
+    window.pins.deselect();
     popupElem.classList.add('hidden');
   };
 
-  var onPopupEscPress = function (event) {
+  var onEscPress = function (event) {
     if (event.keyCode === window.constants.ESC_KEYCODE) {
-      closePopup();
+      close();
     }
   };
 
   /** Вешает закрывателей на ноду попапа */
-  var addPopupCloseHandlers = function () {
-    var popupCloseElem = document.querySelector('.popup__close');
-    popupCloseElem.addEventListener('click', function () {
-      closePopup();
+  var addCloseHandlers = function () {
+    var closeElem = document.querySelector('.popup__close');
+    closeElem.addEventListener('click', function () {
+      close();
     });
-    document.addEventListener('keydown', onPopupEscPress);
+    document.addEventListener('keydown', onEscPress);
   };
 
   /**
    * Рендерит попап объявления с заменой предыдущего (если он был)
-   * @param {OfferObj} offer
+   * @param {data} offer
    */
-  var renderPopup = function (offer) {
+  var render = function (offer) {
     var mapFiltersElem = document.querySelector('.map__filters-container');
 
     var oldOfferElem = mapFiltersElem.querySelector('.map__card');
-    var offerElem = window.offer.render(offer);
+    var offerElem = window.offer.createElem(offer);
 
     if (oldOfferElem) {
       mapFiltersElem.replaceChild(offerElem, oldOfferElem);
     } else {
       mapFiltersElem.appendChild(offerElem);
     }
+
+    addCloseHandlers();
   };
 
 
   window.popup = {
-    addPopupCloseHandlers: addPopupCloseHandlers,
-    renderPopup: renderPopup
+    render: render
   };
 })();

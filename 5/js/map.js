@@ -1,50 +1,53 @@
 'use strict';
 
-var mapElem = document.querySelector('.map');
+(function () {
+  var mapElem = document.querySelector('.map');
 
-var mapPinsElem = mapElem.querySelector('.map__pins');
-var mapPinMainElem = mapElem.querySelector('.map__pin--main');
+  var pinsElem = mapElem.querySelector('.map__pins');
+  var pinMainElem = mapElem.querySelector('.map__pin--main');
 
-var mapFiltersFormElem = mapElem.querySelector('.map__filters');
-var noticeFormElem = document.querySelector('.notice__form');
-
-window.forms.toggleDisabledOnFormElems(noticeFormElem, true);
-window.forms.toggleDisabledOnFormElems(mapFiltersFormElem, true);
+  var filtersFormElem = mapElem.querySelector('.map__filters');
+  var noticeFormElem = document.querySelector('.notice__form');
 
 
-/** Отрисовывает пины, энаблит элементы форм */
-var enableInteractivity = function () {
-  mapElem.classList.remove('map--faded');
-  noticeFormElem.classList.remove('notice__form--disabled');
+  /** Отрисовывает пины, энаблит элементы форм */
+  var enableInteractivity = function () {
+    mapElem.classList.remove('map--faded');
+    noticeFormElem.classList.remove('notice__form--disabled');
 
-  window.forms.toggleDisabledOnFormElems(noticeFormElem, false);
-  window.forms.toggleDisabledOnFormElems(mapFiltersFormElem, false);
+    window.forms.toggleDisabledOnElems(noticeFormElem, false);
+    window.forms.toggleDisabledOnElems(filtersFormElem, false);
 
-  window.pins.renderPins(window.data.getOffers);
-};
+    window.pins.render(window.data.getOffers);
+  };
 
-/**
- * При первом клике запускает интерактивность, потом убивает слушателей на повторный запуск (не нужен)
- */
-var onUserPinMouseUp = function () {
-  enableInteractivity();
-  mapPinMainElem.removeEventListener('mouseup', onUserPinMouseUp);
-  mapPinMainElem.removeEventListener('keydown', onUserPinEnterPress);
-};
-
-/**
- * При первом нажатии запускает интерактивность, потом убивает слушателей на повторный запуск (не нужен)
- * @param {KeyboardEvent} event
- */
-var onUserPinEnterPress = function (event) {
-  if (event.keyCode === window.constants.ENTER_KEYCODE || event.keyCode === window.constants.SPACE_KEYCODE) {
+  /**
+   * При первом клике запускает интерактивность, потом убивает слушателей на повторный запуск (не нужен)
+   */
+  var onUserPinMouseUp = function () {
     enableInteractivity();
-    mapPinMainElem.removeEventListener('keydown', onUserPinEnterPress);
-    mapPinMainElem.removeEventListener('mouseup', onUserPinMouseUp);
-  }
-};
+    pinMainElem.removeEventListener('mouseup', onUserPinMouseUp);
+    pinMainElem.removeEventListener('keydown', onUserPinEnterPress);
+  };
 
-mapPinMainElem.addEventListener('mouseup', onUserPinMouseUp);
-mapPinMainElem.addEventListener('keydown', onUserPinEnterPress);
+  /**
+   * При первом нажатии запускает интерактивность, потом убивает слушателей на повторный запуск (не нужен)
+   * @param {KeyboardEvent} event
+   */
+  var onUserPinEnterPress = function (event) {
+    if (event.keyCode === window.constants.ENTER_KEYCODE || event.keyCode === window.constants.SPACE_KEYCODE) {
+      enableInteractivity();
+      pinMainElem.removeEventListener('keydown', onUserPinEnterPress);
+      pinMainElem.removeEventListener('mouseup', onUserPinMouseUp);
+    }
+  };
 
-mapPinsElem.addEventListener('click', window.pins.onOfferPinClick);
+
+  window.forms.toggleDisabledOnElems(noticeFormElem, true);
+  window.forms.toggleDisabledOnElems(filtersFormElem, true);
+
+  pinMainElem.addEventListener('mouseup', onUserPinMouseUp);
+  pinMainElem.addEventListener('keydown', onUserPinEnterPress);
+
+  pinsElem.addEventListener('click', window.pins.onClick);
+})();

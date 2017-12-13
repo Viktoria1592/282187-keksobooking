@@ -26,6 +26,7 @@
 
   var addressInputElem = userFormElem.querySelector('#address');
 
+
   /**
    * При выборе опции селекта из первого параметра выбирает опцию с аналогичным значением у селекта из второго параметра
    * @param {HTMLSelectElement} changedSelect
@@ -42,9 +43,7 @@
     }
   };
 
-  /**
-   * Задает минимальную цену за ночь согласно константе-объекту минимальных цен
-   */
+  /** Задает минимальную цену за ночь согласно константе-объекту минимальных цен */
   var syncTypeWithMinPrice = function () {
     var selectedType = typeSelectElem.options[typeSelectElem.selectedIndex].value;
     priceInputElem.min = MIN_PRICES[selectedType];
@@ -82,21 +81,12 @@
     }
   };
 
-
-  syncRoomsWithGuests();
-  userFormElem.addEventListener('change', onUserFormElemChange);
-
-
-  // Временная фигня, чтобы форма сабмитилась и сервер данные принял
-  addressInputElem.value = 'Tokyo-to, Chiyoda-ku Hitotsu-bashi 2-5-10';
-
-
   /**
-   * Добавляет или убирает аттрибут disabled нодам формы в зависимости от условия
+   * Добавляет или убирает аттрибут disabled нодам формы в зависимости от isDisabled
    * @param {HTMLCollection} form
    * @param {boolean} isDisabled
    */
-  var toggleDisabledOnFormElems = function (form, isDisabled) {
+  var toggleDisabledOnElems = function (form, isDisabled) {
     var formElems = form.elements;
 
     for (var i = 0; i < formElems.length; i += 1) {
@@ -104,8 +94,15 @@
     }
   };
 
-  window.forms = {
-    toggleDisabledOnFormElems: toggleDisabledOnFormElems
-  };
 
+  syncRoomsWithGuests();
+  userFormElem.addEventListener('change', onUserFormElemChange);
+
+  // Временная фигня, чтобы форма сабмитилась и сервер данные принял
+  addressInputElem.value = 'Tokyo-to, Chiyoda-ku Hitotsu-bashi 2-5-10';
+
+
+  window.forms = {
+    toggleDisabledOnElems: toggleDisabledOnElems
+  };
 })();

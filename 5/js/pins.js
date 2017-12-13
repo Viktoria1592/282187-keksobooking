@@ -6,18 +6,19 @@
   var mapPinsElem = document.querySelector('.map .map__pins');
 
   /** Константы размеров пина */
-  var PIN_NEEDLE_HEIGHT = 18;
+  var NEEDLE_HEIGHT = 18;
   var PIN_OFFSET_X = pinImgElem.getAttribute('width') / 2;
-  var PIN_OFFSET_Y = parseFloat(pinImgElem.getAttribute('height')) + PIN_NEEDLE_HEIGHT;
+  var PIN_OFFSET_Y = parseFloat(pinImgElem.getAttribute('height')) + NEEDLE_HEIGHT;
+
 
   /**
    * Создает ноду пина
-   * @param {OfferObj.location} coordinates
-   * @param {OfferObj.author.avatar} avatar
+   * @param {data.location} coordinates
+   * @param {data.author.avatar} avatar
    * @param {number} dataIndex
    * @return {HTMLElement}
    */
-  var createPinElem = function (coordinates, avatar, dataIndex) {
+  var createElem = function (coordinates, avatar, dataIndex) {
     var pinElem = pinTemplate.cloneNode(true);
     pinElem.querySelector('img').src = avatar;
 
@@ -31,19 +32,19 @@
 
   /**
    * Рендерит фрагмент всех пинов
-   * @param {Array.<OfferObj>} offers
+   * @param {Array.<data>} offers
    */
-  var renderPins = function (offers) {
+  var renderFragment = function (offers) {
     var pinFragment = document.createDocumentFragment();
 
     offers.forEach(function (offer, index) {
-      pinFragment.appendChild(createPinElem(offer.location, offer.author.avatar, index));
+      pinFragment.appendChild(createElem(offer.location, offer.author.avatar, index));
     });
 
     mapPinsElem.appendChild(pinFragment);
   };
 
-  var removePinActiveClass = function () {
+  var removeActiveClass = function () {
     var pins = mapPinsElem.querySelectorAll('.map__pin--active');
     pins.forEach(function (pin) {
       pin.classList.remove('map__pin--active');
@@ -64,23 +65,22 @@
    * Отнимает у пинов активный класс, потом бабблит клик до нужной ноды. Если находит нужную - задает активный ей класс, заменяет попап и вешает на него отслеживание закрытия
    * @param {MouseEvent} event
    */
-  var onOfferPinClick = function (event) {
-    window.pins.removePinActiveClass();
+  var onClick = function (event) {
+    window.pins.deselect();
 
     var target = event.target;
     var clickedPin = window.utils.findClosestElem(target, 'map__pin', mapPinsElem);
 
     if (clickedPin) {
       clickedPin.classList.add('map__pin--active');
-      window.popup.renderPopup(getClickedPinOffer(clickedPin));
-      window.popup.addPopupCloseHandlers();
+      window.popup.render(getClickedPinOffer(clickedPin));
     }
   };
 
 
   window.pins = {
-    renderPins: renderPins,
-    removePinActiveClass: removePinActiveClass,
-    onOfferPinClick: onOfferPinClick
+    render: renderFragment,
+    deselect: removeActiveClass,
+    onClick: onClick
   };
 })();

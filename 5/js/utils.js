@@ -43,15 +43,6 @@
   };
 
   /**
-   * Возвращает адрес изображения
-   * @param {number} avatar
-   * @return {string}
-   */
-  var getAvatarUrl = function (avatar) {
-    return 'img/avatars/user' + addZero(avatar) + '.png';
-  };
-
-  /**
    * Принимает цель события, класс, на котором событие должно быть поймано и родителя, до которого событие может всплыть. Возвращает элемент с нужным классом
    * @param {Event.target} target
    * @param {string} elemClass
@@ -77,7 +68,6 @@
     getRandomElem: getRandomElem,
     getArrayOfRandomLength: getArrayOfRandomLength,
     addZero: addZero,
-    getAvatarUrl: getAvatarUrl,
     findClosestElem: findClosestElem
   };
 })();

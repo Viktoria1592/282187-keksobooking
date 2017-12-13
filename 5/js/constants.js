@@ -7,7 +7,6 @@
     ENTER_KEYCODE: 13,
     SPACE_KEYCODE: 32,
 
-
     /** Количество нужных объявлений */
     OFFERS_COUNT: 8
   };
