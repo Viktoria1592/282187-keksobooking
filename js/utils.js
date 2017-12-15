@@ -62,12 +62,96 @@
     return closestElem;
   };
 
+  /**
+   * Активирует таскание у любого элемента
+   * @param {HTMLElement} handlerElem - То, за что таскаем, "ручка"
+   * @param {HTMLElement} [dragElem] - То, что таскаем. Если не задан - весь элемент становится ручкой, таскать можно за любую его часть
+   * @param {Object} [extraLimits] - Дополнительный лимит вида "лимит X пикселей от левой стороны отца, Y пикселей от правой границы отца". Задавать только со всеми осями (X и Y)!
+   * @param {Function} [callback]
+   */
+  var enableDragging = function (handlerElem, dragElem, extraLimits, callback) {
+    dragElem = dragElem || handlerElem;
+
+    /** Если экстралимит не задан, заносим в переменную limits объект с нулевыми значениями лимитов */
+    var noLimits = {
+      x: {
+        left: 0,
+        right: 0
+      },
+      y: {
+        top: 0,
+        bottom: 0
+      }
+    };
+
+    var limits = Object.assign(noLimits, extraLimits);
+
+
+    handlerElem.addEventListener('mousedown', function (event) {
+      event.preventDefault();
+
+      var clickInsideElemOffset = {
+        x: event.clientX - dragElem.offsetLeft,
+        y: event.clientY - dragElem.offsetTop
+      };
+
+      var dragElemHalfWidth = dragElem.offsetWidth / 2;
+      var dragElemHalfHeight = dragElem.offsetHeight / 2;
+
+
+      /** Меньше этих значений драг идти не будет. Учитывают размеры самого элемента относительно начальных координат родителя (которые 0) */
+      var minCoords = {
+        x: dragElemHalfWidth + limits.x.left,
+        y: dragElemHalfHeight + limits.y.top
+      };
+
+      /** Больше этих значений драг идти не будет. Учитывают размеры самого элемента относительно размеров родителя и экстралимит */
+      var maxCoords = {
+        x: dragElem.parentNode.offsetWidth - dragElemHalfWidth - limits.x.right,
+        y: dragElem.parentNode.offsetHeight - dragElemHalfHeight - limits.y.bottom
+      };
+
+
+      var onElemHandlerMouseMove = function (moveEvent) {
+        /** Здесь новые координаты перемещаемого элемента, которыми обновляется элемент */
+        var moveCoords = {
+          x: moveEvent.clientX - clickInsideElemOffset.x,
+          y: moveEvent.clientY - clickInsideElemOffset.y
+        };
+
+        var movedElemNewPosition = {
+          x: Math.max(minCoords.x, Math.min(moveCoords.x, maxCoords.x)),
+          y: Math.max(minCoords.y, Math.min(moveCoords.y, maxCoords.y))
+        };
+
+        /** Назначает новые координаты в зависимости от ширины и высоты родительского элемента */
+        dragElem.style.left = movedElemNewPosition.x + 'px';
+        dragElem.style.top = movedElemNewPosition.y + 'px';
+
+
+        if (typeof callback === 'function') {
+          callback(movedElemNewPosition);
+        }
+      };
+
+      var onElemHandlerMouseUp = function () {
+        document.removeEventListener('mousemove', onElemHandlerMouseMove);
+        document.removeEventListener('mouseup', onElemHandlerMouseUp);
+      };
+
+
+      document.addEventListener('mousemove', onElemHandlerMouseMove);
+      document.addEventListener('mouseup', onElemHandlerMouseUp);
+    });
+  };
+
 
   window.utils = {
     getRandomNum: getRandomNum,
     getRandomElem: getRandomElem,
     getArrayOfRandomLength: getArrayOfRandomLength,
     addZero: addZero,
-    findClosestElem: findClosestElem
+    findClosestElem: findClosestElem,
+    enableDragging: enableDragging
   };
 })();

@@ -291,6 +291,7 @@ textarea:focus
 
 .map__pin--main
 {
+    z-index: 5;
     top: 375px;
     left: 50%;
 
@@ -409,7 +410,7 @@ textarea:focus
     font-size: 14px;
 
     position: absolute;
-    z-index: 2;
+    z-index: 10;
     top: 150px;
     left: 20px;
 

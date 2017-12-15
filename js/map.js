@@ -2,12 +2,38 @@
 
 (function () {
   var mapElem = document.querySelector('.map');
+  var overlayElem = mapElem.querySelector('.map__pinsoverlay');
 
   var pinsElem = mapElem.querySelector('.map__pins');
   var pinMainElem = mapElem.querySelector('.map__pin--main');
 
   var filtersFormElem = mapElem.querySelector('.map__filters');
   var noticeFormElem = document.querySelector('.notice__form');
+
+
+  /** Константы размеров пользовательского пина */
+  var NEEDLE_HEIGHT = 22;
+  var USER_PIN_NEEDLE_POSITION = pinMainElem.offsetWidth / 2;
+  var USER_PIN_HEIGHT = pinMainElem.offsetHeight + NEEDLE_HEIGHT;
+
+  /** Константа лимита таскания пина */
+  var PIN_LIMITS = {
+    x: {
+      left: 0,
+      right: 0
+    },
+    y: {
+      top: 100,
+      /** Нижний предел рассчитывается через высоту отца - высоту таскаемого элемента - 500 */
+      bottom: overlayElem.offsetHeight - pinMainElem.offsetHeight - 500
+    }
+  };
+
+
+  var pinMainElemPosition = {
+    x: pinMainElem.offsetLeft,
+    y: pinMainElem.offsetTop
+  };
 
 
   /** Отрисовывает пины, энаблит элементы форм */
@@ -42,12 +68,27 @@
     }
   };
 
+  /**
+   * Получает координаты пина, вычисляет координаты иголки пина, передает их в поле адреса
+   * @param {Object} position
+   */
+  var getPinElemNeedleCoords = function (position) {
+    var updatedCoords = {
+      x: position.x + USER_PIN_NEEDLE_POSITION,
+      y: position.y + USER_PIN_HEIGHT
+    };
 
+    window.forms.onCoordsChange(updatedCoords);
+  };
+
+
+  getPinElemNeedleCoords(pinMainElemPosition);
+
+  window.utils.enableDragging(pinMainElem, pinMainElem, PIN_LIMITS, getPinElemNeedleCoords);
   window.forms.toggleDisabledOnElems(noticeFormElem, true);
   window.forms.toggleDisabledOnElems(filtersFormElem, true);
 
   pinMainElem.addEventListener('mouseup', onUserPinMouseUp);
   pinMainElem.addEventListener('keydown', onUserPinEnterPress);
-
   pinsElem.addEventListener('click', window.pins.onClick);
 })();
