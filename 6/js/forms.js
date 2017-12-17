@@ -20,6 +20,7 @@
 
   var typeSelectElem = userFormElem.querySelector('#type');
   var priceInputElem = userFormElem.querySelector('#price');
+  var addressInputElem = document.querySelector('#address');
 
   var numOfRoomsSelectElem = userFormElem.querySelector('#room_number');
   var capacitySelectElem = userFormElem.querySelector('#capacity');
@@ -92,12 +93,17 @@
     }
   };
 
+  var onCoordsChange = function (x, y) {
+    addressInputElem.value = 'x: ' + x + ', y: ' + y;
+  };
+
 
   syncRoomsWithGuests();
   userFormElem.addEventListener('change', onUserFormElemChange);
 
 
   window.forms = {
-    toggleDisabledOnElems: toggleDisabledOnElems
+    toggleDisabledOnElems: toggleDisabledOnElems,
+    onCoordsChange: onCoordsChange
   };
 })();

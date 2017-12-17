@@ -48,8 +48,6 @@
     offerElem.querySelector('.popup__features').appendChild(createFeaturesFragment(rent.offer.features));
     offerElem.removeChild(offerElem.querySelector('.popup__pictures'));
 
-    offerElem.style.zIndex = '10';
-
     return offerElem;
   };
 

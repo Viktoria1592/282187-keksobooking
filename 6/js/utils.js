@@ -66,22 +66,21 @@
    * Активирует таскание у любого элемента
    * @param {HTMLElement} handlerElem - То, за что таскаем, "ручка"
    * @param {HTMLElement} [dragElem] - То, что таскаем. Если не задан - весь элемент становится ручкой, таскать можно за любую его часть
-   * @param {Object} [extraYLimit] - Дополнительный лимит по Y
+   * @param {Object} [extraLimits] - Дополнительный лимит вида "лимит X пикселей от левой стороны отца, Y пикселей от правой границы отца". Задавать только со всеми осями (X и Y)!
    */
-  var enableDragging = function (handlerElem, dragElem, extraYLimit) {
-    if (!dragElem) {
-      dragElem = handlerElem;
-    }
-
-    var limits = {};
-    if (extraYLimit) {
-      limits.min = extraYLimit.min;
-      limits.max = extraYLimit.min;
-    } else {
-      limits.min = 0;
-      limits.max = 0;
-    }
-
+  var enableDragging = function (handlerElem, dragElem, extraLimits) {
+    dragElem = dragElem || handlerElem;
+    /** Если экстралимит не задан, заносим в переменную limits объект с нулевыми значениями лимитов */
+    var limits = extraLimits || {
+      x: {
+        left: 0,
+        right: 0
+      },
+      y: {
+        top: 0,
+        bottom: 0
+      }
+    };
 
     handlerElem.addEventListener('mousedown', function (event) {
       event.preventDefault();
@@ -91,27 +90,34 @@
         y: event.clientY
       };
 
-      /** Меньше этих значений драг идти не будет. Учитывают размеры самого элемента */
+      /** Меньше этих значений драг идти не будет. Учитывают размеры самого элемента относительно начальных координат родителя (которые 0) */
       var minCoords = {
-        x: dragElem.parentNode.offsetLeft + dragElem.offsetWidth / 2,
-        y: dragElem.parentNode.offsetTop + dragElem.offsetHeight / 2 + limits.min
+        x: dragElem.offsetWidth / 2 + limits.x.left,
+        y: dragElem.offsetHeight / 2 + limits.y.top
       };
 
-      /** Больше этих значений драг идти не будет. Учитывают размеры самого элемента и экстралимит, если задан */
+      /** Больше этих значений драг идти не будет. Учитывают размеры самого элемента относительно размеров родителя и экстралимит */
       var maxCoords = {
-        x: minCoords.x + dragElem.parentNode.offsetWidth - dragElem.offsetWidth,
-        y: minCoords.y - limits.min - limits.max + dragElem.parentNode.offsetHeight - dragElem.offsetHeight
+        x: minCoords.x - limits.x.left - limits.x.right + dragElem.parentNode.offsetWidth - dragElem.offsetWidth,
+        y: minCoords.y - limits.y.top - limits.y.bottom + dragElem.parentNode.offsetHeight - dragElem.offsetHeight
       };
 
       var onElemHandlerMouseMove = function (moveEvent) {
+        /** Разница между координатами прошлого события (сначала это mousedown, потом mousemove) и текущего события) */
         var movedDistanceCoords = {
           x: currentCoords.x - moveEvent.clientX,
           y: currentCoords.y - moveEvent.clientY
         };
 
+        /** Здесь новые координаты перемещаемого элемента, которыми обновляется элемент */
+        var moveCoords = {
+          x: dragElem.offsetLeft - movedDistanceCoords.x,
+          y: dragElem.offsetTop - movedDistanceCoords.y
+        };
+
         /** Назначает новые координаты в зависимости от ширины и высоты родительского элемента */
-        dragElem.style.left = Math.max(minCoords.x, Math.min(dragElem.offsetLeft - movedDistanceCoords.x, maxCoords.x)) + 'px';
-        dragElem.style.top = Math.max(minCoords.y, Math.min(dragElem.offsetTop - movedDistanceCoords.y, maxCoords.y)) + 'px';
+        dragElem.style.left = Math.max(minCoords.x, Math.min(moveCoords.x, maxCoords.x)) + 'px';
+        dragElem.style.top = Math.max(minCoords.y, Math.min(moveCoords.y, maxCoords.y)) + 'px';
 
         /** Обновляет координаты в соответствии с передвижением элемента*/
         currentCoords = {

@@ -10,21 +10,22 @@
   var filtersFormElem = mapElem.querySelector('.map__filters');
   var noticeFormElem = document.querySelector('.notice__form');
 
-  var addressInputElem = document.querySelector('#address[readonly]');
-
-
-  pinMainElem.style.zIndex = '5';
-
 
   /** Константы размеров пользовательского пина */
   var NEEDLE_HEIGHT = 22;
   var USER_PIN_NEEDLE_POSITION = pinMainElem.offsetWidth / 2;
   var USER_PIN_HEIGHT = pinMainElem.offsetHeight + NEEDLE_HEIGHT;
 
-  /** Константы лимита таскания пина */
-  var LIMIT_Y = {
-    min: 100,
-    max: overlayElem.offsetHeight - 500
+  /** Константа лимита таскания пина */
+  var PIN_LIMITS = {
+    x: {
+      left: 0,
+      right: 0
+    },
+    y: {
+      top: 100,
+      bottom: overlayElem.offsetHeight - pinMainElem.offsetHeight - 500
+    }
   };
 
 
@@ -66,11 +67,11 @@
       y: pinMainElem.offsetTop + USER_PIN_HEIGHT
     };
 
-    addressInputElem.value = 'x: ' + coords.x + ', y: ' + coords.y;
+    window.forms.onCoordsChange(coords.x, coords.y);
   };
 
 
-  window.utils.enableDragging(pinMainElem, pinMainElem, LIMIT_Y);
+  window.utils.enableDragging(pinMainElem, pinMainElem, PIN_LIMITS);
   window.forms.toggleDisabledOnElems(noticeFormElem, true);
   window.forms.toggleDisabledOnElems(filtersFormElem, true);
 
