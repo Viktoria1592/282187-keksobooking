@@ -90,19 +90,24 @@
         y: event.clientY
       };
 
+      var dragElemWidth = dragElem.offsetWidth;
+      var dragElemHeight = dragElem.offsetHeight;
+
       /** Меньше этих значений драг идти не будет. Учитывают размеры самого элемента относительно начальных координат родителя (которые 0) */
       var minCoords = {
-        x: dragElem.offsetWidth / 2 + limits.x.left,
-        y: dragElem.offsetHeight / 2 + limits.y.top
+        x: dragElemWidth / 2 + limits.x.left,
+        y: dragElemHeight / 2 + limits.y.top
       };
 
       /** Больше этих значений драг идти не будет. Учитывают размеры самого элемента относительно размеров родителя и экстралимит */
       var maxCoords = {
-        x: minCoords.x - limits.x.left - limits.x.right + dragElem.parentNode.offsetWidth - dragElem.offsetWidth,
-        y: minCoords.y - limits.y.top - limits.y.bottom + dragElem.parentNode.offsetHeight - dragElem.offsetHeight
+        x: minCoords.x - limits.x.left - limits.x.right + dragElem.parentNode.offsetWidth - dragElemWidth,
+        y: minCoords.y - limits.y.top - limits.y.bottom + dragElem.parentNode.offsetHeight - dragElemHeight
       };
 
       var onElemHandlerMouseMove = function (moveEvent) {
+        var dragElemXPosition = dragElem.offsetLeft;
+        var dragElemYPosition = dragElem.offsetTop;
         /** Разница между координатами прошлого события (сначала это mousedown, потом mousemove) и текущего события) */
         var movedDistanceCoords = {
           x: currentCoords.x - moveEvent.clientX,
@@ -111,8 +116,8 @@
 
         /** Здесь новые координаты перемещаемого элемента, которыми обновляется элемент */
         var moveCoords = {
-          x: dragElem.offsetLeft - movedDistanceCoords.x,
-          y: dragElem.offsetTop - movedDistanceCoords.y
+          x: dragElemXPosition - movedDistanceCoords.x,
+          y: dragElemYPosition - movedDistanceCoords.y
         };
 
         /** Назначает новые координаты в зависимости от ширины и высоты родительского элемента */

@@ -67,7 +67,7 @@
       y: pinMainElem.offsetTop + USER_PIN_HEIGHT
     };
 
-    window.forms.onCoordsChange(coords.x, coords.y);
+    window.forms.onCoordsChange(coords);
   };
 
 

@@ -93,8 +93,8 @@
     }
   };
 
-  var onCoordsChange = function (x, y) {
-    addressInputElem.value = 'x: ' + x + ', y: ' + y;
+  var onCoordsChange = function (coords) {
+    addressInputElem.value = 'x: ' + Math.round(coords.x) + ', y: ' + Math.round(coords.y);
   };
 
 
