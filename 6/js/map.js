@@ -61,13 +61,11 @@
     }
   };
 
-  var onCoordPinMouseUp = function () {
-    var coords = {
+  var updateCoordPinPosition = function () {
+    return {
       x: pinMainElem.offsetLeft + USER_PIN_NEEDLE_POSITION,
       y: pinMainElem.offsetTop + USER_PIN_HEIGHT
     };
-
-    window.forms.onCoordsChange(coords);
   };
 
 
@@ -76,8 +74,9 @@
   window.forms.toggleDisabledOnElems(filtersFormElem, true);
 
   pinMainElem.addEventListener('mouseup', onUserPinMouseUp);
-  pinMainElem.addEventListener('mouseup', onCoordPinMouseUp);
+  document.documentElement.addEventListener('mouseup', function () {
+    window.forms.onCoordsChange(updateCoordPinPosition());
+  });
   pinMainElem.addEventListener('keydown', onUserPinEnterPress);
-
   pinsElem.addEventListener('click', window.pins.onClick);
 })();
