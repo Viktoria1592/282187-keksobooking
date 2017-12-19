@@ -61,22 +61,25 @@
     }
   };
 
-  var updateCoordPinPosition = function () {
-    return {
-      x: pinMainElem.offsetLeft + USER_PIN_NEEDLE_POSITION,
-      y: pinMainElem.offsetTop + USER_PIN_HEIGHT
+  /**
+   * Получает координаты пина, вычисляет координаты иголки пина, передает их в поле адреса
+   * @param {Object} position
+   */
+  var getPinElemNeedleCoords = function (position) {
+    var updatedCoords = {
+      x: position.x + USER_PIN_NEEDLE_POSITION,
+      y: position.y + USER_PIN_HEIGHT
     };
+
+    window.forms.onCoordsChange(updatedCoords);
   };
 
 
-  window.utils.enableDragging(pinMainElem, pinMainElem, PIN_LIMITS);
+  window.utils.enableDragging(pinMainElem, pinMainElem, PIN_LIMITS, getPinElemNeedleCoords);
   window.forms.toggleDisabledOnElems(noticeFormElem, true);
   window.forms.toggleDisabledOnElems(filtersFormElem, true);
 
   pinMainElem.addEventListener('mouseup', onUserPinMouseUp);
-  document.documentElement.addEventListener('mouseup', function () {
-    window.forms.onCoordsChange(updateCoordPinPosition());
-  });
   pinMainElem.addEventListener('keydown', onUserPinEnterPress);
   pinsElem.addEventListener('click', window.pins.onClick);
 })();

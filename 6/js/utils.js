@@ -67,8 +67,9 @@
    * @param {HTMLElement} handlerElem - То, за что таскаем, "ручка"
    * @param {HTMLElement} [dragElem] - То, что таскаем. Если не задан - весь элемент становится ручкой, таскать можно за любую его часть
    * @param {Object} [extraLimits] - Дополнительный лимит вида "лимит X пикселей от левой стороны отца, Y пикселей от правой границы отца". Задавать только со всеми осями (X и Y)!
+   * @param {Function} [callback]
    */
-  var enableDragging = function (handlerElem, dragElem, extraLimits) {
+  var enableDragging = function (handlerElem, dragElem, extraLimits, callback) {
     dragElem = dragElem || handlerElem;
     /** Если экстралимит не задан, заносим в переменную limits объект с нулевыми значениями лимитов */
     var limits = extraLimits || {
@@ -106,8 +107,15 @@
       };
 
       var onElemHandlerMouseMove = function (moveEvent) {
-        var dragElemXPosition = dragElem.offsetLeft;
-        var dragElemYPosition = dragElem.offsetTop;
+        var dragElemPosition = {
+          x: dragElem.offsetLeft,
+          y: dragElem.offsetTop
+        };
+
+        if (typeof callback === 'function') {
+          callback(dragElemPosition);
+        }
+
         /** Разница между координатами прошлого события (сначала это mousedown, потом mousemove) и текущего события) */
         var movedDistanceCoords = {
           x: currentCoords.x - moveEvent.clientX,
@@ -116,8 +124,8 @@
 
         /** Здесь новые координаты перемещаемого элемента, которыми обновляется элемент */
         var moveCoords = {
-          x: dragElemXPosition - movedDistanceCoords.x,
-          y: dragElemYPosition - movedDistanceCoords.y
+          x: dragElemPosition.x - movedDistanceCoords.x,
+          y: dragElemPosition.y - movedDistanceCoords.y
         };
 
         /** Назначает новые координаты в зависимости от ширины и высоты родительского элемента */
