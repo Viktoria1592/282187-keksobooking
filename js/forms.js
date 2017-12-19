@@ -20,11 +20,10 @@
 
   var typeSelectElem = userFormElem.querySelector('#type');
   var priceInputElem = userFormElem.querySelector('#price');
+  var addressInputElem = document.querySelector('#address');
 
   var numOfRoomsSelectElem = userFormElem.querySelector('#room_number');
   var capacitySelectElem = userFormElem.querySelector('#capacity');
-
-  var addressInputElem = userFormElem.querySelector('#address');
 
 
   /**
@@ -94,15 +93,17 @@
     }
   };
 
+  var onCoordsChange = function (coords) {
+    addressInputElem.value = 'x: ' + Math.round(coords.x) + ', y: ' + Math.round(coords.y);
+  };
+
 
   syncRoomsWithGuests();
   userFormElem.addEventListener('change', onUserFormElemChange);
 
-  // Временная фигня, чтобы форма сабмитилась и сервер данные принял
-  addressInputElem.value = 'Tokyo-to, Chiyoda-ku Hitotsu-bashi 2-5-10';
-
 
   window.forms = {
-    toggleDisabledOnElems: toggleDisabledOnElems
+    toggleDisabledOnElems: toggleDisabledOnElems,
+    onCoordsChange: onCoordsChange
   };
 })();
