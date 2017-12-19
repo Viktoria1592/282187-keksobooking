@@ -29,6 +29,12 @@
   };
 
 
+  var pinMainElemPosition = {
+    x: pinMainElem.offsetLeft,
+    y: pinMainElem.offsetTop
+  };
+
+
   /** Отрисовывает пины, энаблит элементы форм */
   var enableInteractivity = function () {
     mapElem.classList.remove('map--faded');
@@ -74,6 +80,8 @@
     window.forms.onCoordsChange(updatedCoords);
   };
 
+
+  getPinElemNeedleCoords(pinMainElemPosition);
 
   window.utils.enableDragging(pinMainElem, pinMainElem, PIN_LIMITS, getPinElemNeedleCoords);
   window.forms.toggleDisabledOnElems(noticeFormElem, true);

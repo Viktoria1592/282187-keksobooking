@@ -86,9 +86,14 @@
     handlerElem.addEventListener('mousedown', function (event) {
       event.preventDefault();
 
-      var currentCoords = {
-        x: event.clientX,
-        y: event.clientY
+      var dragElemInitPosition = {
+        x: dragElem.offsetLeft,
+        y: dragElem.offsetTop
+      };
+
+      var clickInsideElemOffset = {
+        x: event.clientX - dragElemInitPosition.x,
+        y: event.clientY - dragElemInitPosition.y
       };
 
       var dragElemWidth = dragElem.offsetWidth;
@@ -107,36 +112,24 @@
       };
 
       var onElemHandlerMouseMove = function (moveEvent) {
-        var dragElemPosition = {
-          x: dragElem.offsetLeft,
-          y: dragElem.offsetTop
-        };
-
         if (typeof callback === 'function') {
+          var dragElemPosition = {
+            x: dragElem.offsetLeft,
+            y: dragElem.offsetTop
+          };
+
           callback(dragElemPosition);
         }
 
-        /** Разница между координатами прошлого события (сначала это mousedown, потом mousemove) и текущего события) */
-        var movedDistanceCoords = {
-          x: currentCoords.x - moveEvent.clientX,
-          y: currentCoords.y - moveEvent.clientY
-        };
-
         /** Здесь новые координаты перемещаемого элемента, которыми обновляется элемент */
         var moveCoords = {
-          x: dragElemPosition.x - movedDistanceCoords.x,
-          y: dragElemPosition.y - movedDistanceCoords.y
+          x: moveEvent.clientX - clickInsideElemOffset.x,
+          y: moveEvent.clientY - clickInsideElemOffset.y
         };
 
         /** Назначает новые координаты в зависимости от ширины и высоты родительского элемента */
         dragElem.style.left = Math.max(minCoords.x, Math.min(moveCoords.x, maxCoords.x)) + 'px';
         dragElem.style.top = Math.max(minCoords.y, Math.min(moveCoords.y, maxCoords.y)) + 'px';
-
-        /** Обновляет координаты в соответствии с передвижением элемента*/
-        currentCoords = {
-          x: moveEvent.clientX,
-          y: moveEvent.clientY
-        };
       };
 
       var onElemHandlerMouseUp = function () {
