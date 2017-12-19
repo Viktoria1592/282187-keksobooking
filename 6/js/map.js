@@ -24,6 +24,7 @@
     },
     y: {
       top: 100,
+      /** Нижний предел рассчитывается через высоту отца - высоту таскаемого элемента - 500 */
       bottom: overlayElem.offsetHeight - pinMainElem.offsetHeight - 500
     }
   };
