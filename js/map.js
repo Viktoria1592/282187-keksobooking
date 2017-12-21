@@ -18,13 +18,10 @@
 
   /** Константа лимита таскания пина */
   var PIN_LIMITS = {
-    x: {
-      left: 0,
-      right: 0
-    },
     y: {
       top: 100,
-      /** Нижний предел рассчитывается через высоту отца - высоту таскаемого элемента - 500 */
+      /** Нижний предел рассчитывается через
+       *  высоту отца - высоту таскаемого элемента - 500 */
       bottom: overlayElem.offsetHeight - pinMainElem.offsetHeight - 500
     }
   };
@@ -36,6 +33,20 @@
   };
 
 
+  var onDataLoadSuccess = function (data) {
+    window.pins.render(data);
+
+    window.map.mapData = data;
+  };
+
+  var onDataLoadError = function (error) {
+    var errorElem = document.createElement('div');
+    errorElem.classList.add('error');
+    errorElem.textContent = error;
+    document.body.insertAdjacentElement('afterbegin', errorElem);
+  };
+
+
   /** Отрисовывает пины, энаблит элементы форм */
   var enableInteractivity = function () {
     mapElem.classList.remove('map--faded');
@@ -44,7 +55,7 @@
     window.forms.toggleDisabledOnElems(noticeFormElem, false);
     window.forms.toggleDisabledOnElems(filtersFormElem, false);
 
-    window.pins.render(window.data.getOffers);
+    window.backend.get(window.constants.serverUrl.DOWNLOAD, onDataLoadSuccess, onDataLoadError);
   };
 
   /**
@@ -91,4 +102,9 @@
   pinMainElem.addEventListener('mouseup', onUserPinMouseUp);
   pinMainElem.addEventListener('keydown', onUserPinEnterPress);
   pinsElem.addEventListener('click', window.pins.onClick);
+
+
+  window.map = {
+    mapData: []
+  };
 })();
