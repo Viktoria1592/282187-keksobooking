@@ -1,6 +1,11 @@
 'use strict';
 
 (function () {
+  /** @typedef {Object.<string, number>} Coords
+   * Объект, хранящий x и y координаты
+   */
+
+
   /** Константа количества гостей, при котором бронь будет считаться "не для гостей"  */
   var NOT_FOR_GUESTS_VALUE = 100;
 
@@ -32,14 +37,14 @@
 
   var onXhrError = function (error) {
     var errorElem = document.createElement('div');
-    errorElem.style = window.constants.errorBottomStyle;
+    errorElem.classList.add('error', 'error--bottom');
     errorElem.textContent = error;
     document.body.insertAdjacentElement('afterbegin', errorElem);
   };
 
 
   var onUserFormElemSubmit = function (event) {
-    window.xhr.upload(window.constants.serverUrl.UPLOAD, new FormData(event.target), onXhrSuccess, onXhrError);
+    window.backend.post(window.constants.serverUrl.UPLOAD, new FormData(event.target), onXhrSuccess, onXhrError);
 
     event.preventDefault();
   };
@@ -115,7 +120,7 @@
 
   /**
    * Коллбек для обновления координат в поле адреса
-   * @param {Object} coords
+   * @param {Coords} coords
    */
   var onCoordsChange = function (coords) {
     addressInputElem.value = 'x: ' + Math.round(coords.x) + ', y: ' + Math.round(coords.y);

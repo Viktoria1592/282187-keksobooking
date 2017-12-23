@@ -33,17 +33,15 @@
   };
 
 
-  var onXhrSuccess = function (data) {
+  var onDataLoadSuccess = function (data) {
     window.pins.render(data);
 
-    window.map = {
-      mapData: data || []
-    };
+    window.map.mapData = data;
   };
 
-  var onXhrError = function (error) {
+  var onDataLoadError = function (error) {
     var errorElem = document.createElement('div');
-    errorElem.style = window.constants.errorTopStyle;
+    errorElem.classList.add('error');
     errorElem.textContent = error;
     document.body.insertAdjacentElement('afterbegin', errorElem);
   };
@@ -57,7 +55,7 @@
     window.forms.toggleDisabledOnElems(noticeFormElem, false);
     window.forms.toggleDisabledOnElems(filtersFormElem, false);
 
-    window.xhr.download(window.constants.serverUrl.DOWNLOAD, onXhrSuccess, onXhrError);
+    window.backend.get(window.constants.serverUrl.DOWNLOAD, onDataLoadSuccess, onDataLoadError);
   };
 
   /**
@@ -104,4 +102,9 @@
   pinMainElem.addEventListener('mouseup', onUserPinMouseUp);
   pinMainElem.addEventListener('keydown', onUserPinEnterPress);
   pinsElem.addEventListener('click', window.pins.onClick);
+
+
+  window.map = {
+    mapData: []
+  };
 })();

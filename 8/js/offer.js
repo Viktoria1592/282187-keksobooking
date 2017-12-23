@@ -8,22 +8,36 @@
     house: 'Дом'
   };
 
+  /**
+   * На вход нужный элемент, на выходе копия ноды
+   * @param {string} querySelector
+   * @return {Node}
+   */
+  var copyElemFromTemplate = function (querySelector) {
+    return document.querySelector('template').content.querySelector(querySelector).cloneNode(true);
+  };
 
   /**
    * Создает ноду фичи
    * @param {string} feature
    * @return {HTMLElement}
    */
-  var createFeaturesItemElem = function (feature) {
-    var FeaturesItemElem = document.createElement('li');
-    FeaturesItemElem.classList.add('feature', 'feature--' + feature);
+  var getFeaturesItemElem = function (feature) {
+    var featuresItemElem = copyElemFromTemplate('.popup__features li');
+    featuresItemElem.className = '';
+    featuresItemElem.classList.add('feature', 'feature--' + feature);
 
-    return FeaturesItemElem;
+    return featuresItemElem;
   };
 
-  var createImgItemElem = function (src) {
-    var imgItemElem = document.createElement('li');
-    var imgElem = document.createElement('img');
+  /**
+   * Создает ноду li с изображением внутри
+   * @param {string} src
+   * @return {HTMLLIElement}
+   */
+  var getImgItemElem = function (src) {
+    var imgItemElem = copyElemFromTemplate('.popup__pictures li');
+    var imgElem = imgItemElem.querySelector('img');
     imgElem.src = src;
     imgElem.width = 210;
 
@@ -33,15 +47,15 @@
   };
 
   /**
-   * Создает фрагмент фич
-   * @param {data.offer.features} featuresArray
+   * Создает фрагмент элементов
+   * @param {Array} offersArray
    * @param {Function} elemsCreator
    * @return {DocumentFragment}
    */
-  var createElemsFragment = function (featuresArray, elemsCreator) {
+  var createElemsFragment = function (offersArray, elemsCreator) {
     var elemsFragment = document.createDocumentFragment();
 
-    featuresArray.forEach(function (feature) {
+    offersArray.forEach(function (feature) {
       elemsFragment.appendChild(elemsCreator(feature));
     });
 
@@ -50,11 +64,11 @@
 
   /**
    * Создает ноду объявления
-   * @param {data} rent
+   * @param {Object} rent
    * @return {HTMLElement}
    */
   var createOfferElem = function (rent) {
-    var offerElem = document.querySelector('template').content.querySelector('article.map__card').cloneNode(true);
+    var offerElem = copyElemFromTemplate('article.map__card');
 
     offerElem.querySelector('h3').textContent = rent.offer.title;
     offerElem.querySelector('p small').textContent = rent.offer.address;
@@ -65,9 +79,9 @@
     offerElem.querySelector('.popup__avatar').src = rent.author.avatar;
     offerElem.querySelector('ul + p').textContent = rent.offer.description;
     offerElem.querySelector('.popup__features').innerHTML = '';
-    offerElem.querySelector('.popup__features').appendChild(createElemsFragment(rent.offer.features, createFeaturesItemElem));
+    offerElem.querySelector('.popup__features').appendChild(createElemsFragment(rent.offer.features, getFeaturesItemElem));
     offerElem.querySelector('.popup__pictures').innerHTML = '';
-    offerElem.querySelector('.popup__pictures').appendChild(createElemsFragment(rent.offer.photos, createImgItemElem));
+    offerElem.querySelector('.popup__pictures').appendChild(createElemsFragment(rent.offer.photos, getImgItemElem));
 
     return offerElem;
   };
