@@ -58,7 +58,7 @@
    */
   var getClickedPinOffer = function (eventTarget) {
     var offerIndex = parseFloat(eventTarget.dataset.offer);
-    return window.data.getOffers[offerIndex];
+    return window.map.mapData[offerIndex];
   };
 
   /**
