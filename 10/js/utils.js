@@ -22,6 +22,40 @@
   };
 
   /**
+   * Создает элемент, принимая коллбек на генерацию элемента, селектор старого элемента и отца
+   * @param {string} parentElemSelector - Селектор отца, сюда функция положит новый элемент
+   * @param {Function} newElem - Генератор нового элемента
+   * @param {string} [oldElemSelector] - Старая заменяемая версия элемента
+   */
+  var createOrReplaceElem = function (parentElemSelector, newElem, oldElemSelector) {
+    var parentElem = document.querySelector(parentElemSelector);
+    var oldElem = parentElem.querySelector(oldElemSelector);
+
+    if (oldElem) {
+      parentElem.replaceChild(newElem, oldElem);
+    } else {
+      parentElem.appendChild(newElem);
+    }
+  };
+
+  /**
+   * Создает типовую ошибку
+   * @param {string} errorMessage
+   * @param {string} classOfElem
+   * @param {string} [additionalClass] - Дополнительный класс для БЭМ-модификатора
+   */
+  var createErrorMessageElem = function (errorMessage, classOfElem, additionalClass) {
+    var errorElem = document.createElement('div');
+    errorElem.classList.add(classOfElem);
+    if (additionalClass) {
+      errorElem.classList.add(additionalClass);
+    }
+
+    errorElem.textContent = errorMessage;
+    document.body.insertAdjacentElement('afterbegin', errorElem);
+  };
+
+  /**
    * Создает фрагмент элементов из массива, обрабатывая его с помощью коллбека
    * @param {Array} dataArray - Массив из базы данных
    * @param {Function} elemsCreator - Коллбек, обрабатывающий полученный массив
@@ -122,6 +156,8 @@
 
   window.utils = {
     createElemsFragment: createElemsFragment,
+    createOrReplaceElem: createOrReplaceElem,
+    createErrorMessageElem: createErrorMessageElem,
     findClosestElem: findClosestElem,
     enableDragging: enableDragging
   };

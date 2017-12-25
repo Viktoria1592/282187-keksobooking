@@ -6,6 +6,7 @@
 (function () {
   /** Константа количества гостей, при котором бронь будет считаться "не для гостей" */
   var NOT_FOR_GUESTS_VALUE = '100';
+  var NOT_FOR_GUESTS_INDEX = '3';
 
   /** Константа минимальных цен */
   var MIN_PRICES = {
@@ -35,23 +36,26 @@
   var priceInputElem = userFormElem.querySelector('#price');
   var checkinSelectElem = userFormElem.querySelector('#timein');
   var checkoutSelectElem = userFormElem.querySelector('#timeout');
-  var numOfRoomsSelectElem = userFormElem.querySelector('#room_number');
+  var roomsSelectElem = userFormElem.querySelector('#room_number');
   var capacitySelectElem = userFormElem.querySelector('#capacity');
+  var capacityOptionsElems = capacitySelectElem.querySelectorAll('option');
 
   var addressInputElem = userFormElem.querySelector('#address');
 
 
+  /** Сбрасывает форму и в поле адреса кладет нынешние координаты пользовательского пина */
   var onBackendPostSuccess = function () {
     userFormElem.reset();
+    window.map.setAddressCoords();
   };
 
+  /**
+   * Если нода с ошибкой уже существует - заменяет ее
+   * @param {string} error
+   */
   var onBackendPostError = function (error) {
-    var errorElem = document.createElement('div');
-    errorElem.classList.add('error', 'error--bottom');
-    errorElem.textContent = error;
-    document.body.insertAdjacentElement('afterbegin', errorElem);
+    window.utils.createOrReplaceElem('body', window.utils.createErrorMessageElem(error, 'error', 'error--bottom'), 'error--bottom');
   };
-
 
   var onUserFormElemSubmit = function (event) {
     window.backend.post(window.constants.serverUrl.UPLOAD, new FormData(event.target), onBackendPostSuccess, onBackendPostError);
@@ -76,19 +80,45 @@
     }
   };
 
+  /**
+   * Проверяет, совпадают ли выбранное кол-во комнат с типом мест
+   */
+  var disableInvalidGuestsValues = function () {
+    var selectedRoom = roomsSelectElem.options[roomsSelectElem.selectedIndex].value;
+
+    capacityOptionsElems.forEach(function (option) {
+      option.disabled = true;
+    });
+
+    if (selectedRoom === NOT_FOR_GUESTS_VALUE) {
+      capacityOptionsElems[NOT_FOR_GUESTS_INDEX].disabled = false;
+      return;
+    }
+
+    capacityOptionsElems.forEach(function (option) {
+      if (option.value <= selectedRoom && option.value !== '0') {
+        option.disabled = false;
+      }
+    });
+  };
+
   /** Задает минимальную цену за ночь согласно константе-объекту минимальных цен */
   var syncTypeWithMinPrice = function () {
     var selectedType = typeSelectElem.options[typeSelectElem.selectedIndex].value;
-    priceInputElem.min = MIN_PRICES[selectedType];
+    var selectedPrice = MIN_PRICES[selectedType];
+
+    priceInputElem.min = selectedPrice;
+    priceInputElem.placeholder = selectedPrice;
   };
 
   /** Синхронизирует комнаты с гостями */
   var syncRoomsWithGuests = function () {
-    if (numOfRoomsSelectElem.options[numOfRoomsSelectElem.selectedIndex].value === NOT_FOR_GUESTS_VALUE) {
+    disableInvalidGuestsValues();
+    if (roomsSelectElem.options[roomsSelectElem.selectedIndex].value === NOT_FOR_GUESTS_VALUE) {
       var notForGuestsOption = capacitySelectElem.querySelector('option[value="0"]');
       notForGuestsOption.selected = true;
     } else {
-      syncSelectElemsValue(numOfRoomsSelectElem, capacitySelectElem);
+      syncSelectElemsValue(roomsSelectElem, capacitySelectElem);
     }
   };
 
@@ -109,7 +139,7 @@
       case typeSelectElem:
         syncTypeWithMinPrice();
         break;
-      case numOfRoomsSelectElem:
+      case roomsSelectElem:
         syncRoomsWithGuests();
         break;
     }
@@ -250,6 +280,7 @@
   };
 
 
+  syncTypeWithMinPrice();
   syncRoomsWithGuests();
   userFormElem.addEventListener('submit', onUserFormElemSubmit);
   userFormElem.addEventListener('change', onUserFormElemChange);

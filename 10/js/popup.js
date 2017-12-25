@@ -24,22 +24,9 @@
     document.addEventListener('keydown', onEscPress);
   };
 
-  /**
-   * Рендерит попап объявления с заменой предыдущего (если он был)
-   * @param {Object} offer
-   */
+
   var render = function (offer) {
-    var mapFiltersElem = document.querySelector('.map__filters-container');
-
-    var oldOfferElem = mapFiltersElem.querySelector('.map__card');
-    var offerElem = window.offer.createElem(offer);
-
-    if (oldOfferElem) {
-      mapFiltersElem.replaceChild(offerElem, oldOfferElem);
-    } else {
-      mapFiltersElem.appendChild(offerElem);
-    }
-
+    window.utils.createOrReplaceElem('.map__filters-container', window.offer.createElem(offer), '.map__card');
     addCloseHandlers();
   };
 
