@@ -2,15 +2,17 @@
 
 (function () {
   window.constants = {
-    /** Константы адресов сервера */
-    serverUrl: {
+    /** Енум адресов сервера */
+    ServerUrl: {
       DOWNLOAD: 'https://js.dump.academy/keksobooking/data',
       UPLOAD: 'https://js.dump.academy/keksobooking/'
     },
 
-    /** Константы клавиатурных кодов */
-    ESC_KEYCODE: 27,
-    ENTER_KEYCODE: 13,
-    SPACE_KEYCODE: 32
+    /** Енум клавиатурных кодов */
+    Keycode: {
+      ESC: 27,
+      ENTER: 13,
+      SPACE: 32
+    }
   };
 })();

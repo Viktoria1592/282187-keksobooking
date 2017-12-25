@@ -26,6 +26,7 @@
     }
   };
 
+  /** Данные с сервера */
   var mapData = [];
 
 
@@ -50,7 +51,7 @@
     window.forms.toggleDisabledOnElems(noticeFormElem, false);
     window.forms.toggleDisabledOnElems(filtersFormElem, false);
 
-    window.backend.get(window.constants.serverUrl.DOWNLOAD, onBackendGetSuccess, onBackendGetError);
+    window.backend.get(window.constants.ServerUrl.DOWNLOAD, onBackendGetSuccess, onBackendGetError);
   };
 
   /**
@@ -67,7 +68,7 @@
    * @param {KeyboardEvent} event
    */
   var onUserPinEnterPress = function (event) {
-    if (event.keyCode === window.constants.ENTER_KEYCODE || event.keyCode === window.constants.SPACE_KEYCODE) {
+    if (event.keyCode === window.constants.Keycode.ENTER || event.keyCode === window.constants.Keycode.SPACE) {
       enableInteractivity();
       pinMainElem.removeEventListener('keydown', onUserPinEnterPress);
       pinMainElem.removeEventListener('mouseup', onUserPinMouseUp);

@@ -1,8 +1,8 @@
 'use strict';
 
 (function () {
-  /** Константа переведенных на русский типов жилья */
-  var TYPES = {
+  /** Мапа переведенных на русский типов жилья */
+  var typeToRussian = {
     flat: 'Квартира',
     bungalo: 'Бунгало',
     house: 'Дом'
@@ -59,7 +59,7 @@
     offerElem.querySelector('h3').textContent = rent.offer.title;
     offerElem.querySelector('p small').textContent = rent.offer.address;
     offerElem.querySelector('.popup__price').textContent = rent.offer.price + '₽/ночь';
-    offerElem.querySelector('h4').textContent = TYPES[rent.offer.type];
+    offerElem.querySelector('h4').textContent = typeToRussian[rent.offer.type];
     offerElem.querySelector('h4 + p').textContent = rent.offer.rooms + ' комнаты для ' + rent.offer.guests + ' гостей';
     offerElem.querySelector('h4 + p + p').textContent = 'Заезд после ' + rent.offer.checkin + ',' + ' выезд до ' + rent.offer.checkout;
     offerElem.querySelector('.popup__avatar').src = rent.author.avatar;

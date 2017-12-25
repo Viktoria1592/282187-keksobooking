@@ -9,6 +9,7 @@
 
   var RESPONSE_DATA_LENGTH = 5;
 
+  /** Универсальные функции, возвращающие ошибки в строках */
   var ERRORS = {
     timeoutExceeded: function (timeout) {
       return 'Запрос не успел выполниться за ' + timeout + ' мс';

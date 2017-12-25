@@ -9,7 +9,7 @@
   };
 
   var onEscPress = function (event) {
-    if (event.keyCode === window.constants.ESC_KEYCODE) {
+    if (event.keyCode === window.constants.Keycode.ESC) {
       close();
     }
   };

@@ -4,12 +4,12 @@
  */
 
 (function () {
-  /** Константа количества гостей, при котором бронь будет считаться "не для гостей" */
+  /** Константы количества гостей, при которых бронь будет считаться "не для гостей" */
   var NOT_FOR_GUESTS_VALUE = '100';
   var NOT_FOR_GUESTS_INDEX = '3';
 
-  /** Константа минимальных цен */
-  var MIN_PRICES = {
+  /** Мапа минимальных цен */
+  var housingToMinPrice = {
     bungalo: '0',
     flat: '1000',
     house: '5000',
@@ -34,13 +34,13 @@
   var userFormElem = document.querySelector('.notice__form');
   var typeSelectElem = userFormElem.querySelector('#type');
   var priceInputElem = userFormElem.querySelector('#price');
+  var addressInputElem = userFormElem.querySelector('#address');
   var checkinSelectElem = userFormElem.querySelector('#timein');
   var checkoutSelectElem = userFormElem.querySelector('#timeout');
   var roomsSelectElem = userFormElem.querySelector('#room_number');
   var capacitySelectElem = userFormElem.querySelector('#capacity');
-  var capacityOptionsElems = capacitySelectElem.querySelectorAll('option');
 
-  var addressInputElem = userFormElem.querySelector('#address');
+  var capacityOptionsElems = capacitySelectElem.querySelectorAll('option');
 
 
   /** Сбрасывает форму и в поле адреса кладет нынешние координаты пользовательского пина */
@@ -58,7 +58,7 @@
   };
 
   var onUserFormElemSubmit = function (event) {
-    window.backend.post(window.constants.serverUrl.UPLOAD, new FormData(event.target), onBackendPostSuccess, onBackendPostError);
+    window.backend.post(window.constants.ServerUrl.UPLOAD, new FormData(event.target), onBackendPostSuccess, onBackendPostError);
 
     event.preventDefault();
   };
@@ -102,10 +102,10 @@
     });
   };
 
-  /** Задает минимальную цену за ночь согласно константе-объекту минимальных цен */
+  /** Задает минимальную цену за ночь согласно мапе минимальных цен */
   var syncTypeWithMinPrice = function () {
     var selectedType = typeSelectElem.options[typeSelectElem.selectedIndex].value;
-    var selectedPrice = MIN_PRICES[selectedType];
+    var selectedPrice = housingToMinPrice[selectedType];
 
     priceInputElem.min = selectedPrice;
     priceInputElem.placeholder = selectedPrice;
